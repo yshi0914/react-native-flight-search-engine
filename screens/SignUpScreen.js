@@ -11,11 +11,14 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import * as SQLite from 'expo-sqlite';
+const db = SQLite.openDatabase("user.db");
 
 const SignUpScreen = ({navigation}) => {
     const[data, setData] = React.useState({
-        email: '',
+        username: '',
         password: '',
+        cPassword: '',
         check_textInputChange: false,
         secureTextEntry: true
     });
@@ -24,18 +27,49 @@ const SignUpScreen = ({navigation}) => {
         if (val.length != 0){
             setData({
                 ... data,
-                email: val,
+                username: val,
                 check_textInputChange: true
             });
-        }else{
+        } else {
             setData({
                 ... data,
-                email: val,
+                username: val,
                 check_textInputChange: false
             });
         }
     }
-
+    const handlePasswordChange = (val) => {
+        setData({
+            ...data,
+            password: val
+        });
+    }
+    const handleConfirmPasswordChange = (val) => {
+        setData({
+            ...data,
+            cPassword: val
+        });        
+    }    
+    const signUpHandle = (userName, password) => {
+        if (data.cPassword !== data.password){
+            alert("The password entered should be same.");
+        } else {
+            //alert(userName + " " + password);
+            db.transaction(
+            tx => {
+                tx.executeSql("insert into user (username, pwd) values (?, ?)", [userName, password]);
+                tx.executeSql("select * from user", [], (_, { rows }) =>{
+                    //console.log(JSON.stringify(rows));
+                    alert("Congratulations! You have signed up!");}
+                );
+            },
+            null,
+            null
+            );
+            navigation.goBack();
+        }
+        //signIn(userName, password);
+    }
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -56,7 +90,6 @@ const SignUpScreen = ({navigation}) => {
                     returnKeyType="next"
                     onChangeText={(val) => textInputChange(val)}
                     keyboardType="email-address"
-                    onSubmitEditing={() => this.password.focus()}
                     autoCorrect={false}
                 />
                 {data.check_textInputChange ?
@@ -80,8 +113,8 @@ const SignUpScreen = ({navigation}) => {
                     secureTextEntry={true}
                     style={styles.textInput}
                     autoCapitalize="none"
-                    ref={(input)=> this.password = input}
                     returnKeyType="next"
+                    onChangeText={(val) => handlePasswordChange(val)}
                 />
                 <Feather
                     name="eye-off"
@@ -102,6 +135,7 @@ const SignUpScreen = ({navigation}) => {
                     style={styles.textInput}
                     autoCapitalize="none"
                     returnKeyType="go"
+                    onChangeText={(val) => handleConfirmPasswordChange(val)}
                 />
                 <Feather
                     name="eye-off"
@@ -110,7 +144,10 @@ const SignUpScreen = ({navigation}) => {
                 />
             </View>            
             <View style={styles.button}>
-                <TouchableOpacity style={styles.signIn}>
+                <TouchableOpacity 
+                style={styles.signIn}
+                onPress={() => {signUpHandle(data.username, data.password)}}
+                >
                     <Text style={[styles.textSign,{color:'#fff'}]}>Sign Up</Text>
                 </TouchableOpacity>
 
