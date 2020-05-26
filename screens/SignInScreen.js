@@ -1,4 +1,7 @@
 import React from 'react';
+import * as SQLite from 'expo-sqlite';
+const db = SQLite.openDatabase("user.db");
+
 import { 
     View, 
     Text, 
@@ -23,6 +26,22 @@ const SignInScreen = ({navigation}) => {
     });
 
     const {signIn} = React.useContext(AuthContext);
+
+/**
+            tx.executeSql(
+                "insert into user (username, pwd) values (?,?)", ['test','abcd']
+            );
+            tx.executeSql("delete from user where id > 1", [], (_,{rows}) => 
+                alert(JSON.stringify(rows)));            
+ */
+    // By default, it runs both after the first render and after every update
+    React.useEffect(() => {
+        db.transaction(tx => {
+            tx.executeSql(
+                "create table if not exists user (id integer primary key not null, username text, pwd text);"
+            );
+        });
+    }, []);
 
     const textInputChange = (val) => {
         if (val.length != 0){
@@ -70,7 +89,6 @@ const SignInScreen = ({navigation}) => {
                     onChangeText={(val) => textInputChange(val)}
                     keyboardType="email-address"
                     autoCorrect={false}
-                    onSubmitEditing={() => this.passwordA.focus()}
                 />
                 {data.check_textInputChange ?
                     <Feather
@@ -94,7 +112,6 @@ const SignInScreen = ({navigation}) => {
                     style={styles.textInput}
                     autoCapitalize="none"
                     onChangeText={(val) => handlePasswordChange(val)}
-                    ref={(input)=> this.passwordA = input}
                 />
                 <Feather
                     name="eye-off"

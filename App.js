@@ -17,7 +17,11 @@ import { DrawerContent} from './screens/DrawerContent';
 import {AuthContext} from './components/context';
 
 import RootStackScreen from './screens/RootStackScreen';
+import * as SQLite from 'expo-sqlite';
 
+// database should be created or be existing under the app's 
+// documents directory, i.e. ${FileSystem.documentDirectory}/SQLite/${name}
+const db = SQLite.openDatabase("user.db");
 // The following import is not suitable for Expo Managed App
 //import AsyncStorage from '@react-native-community/async-storage';
 
@@ -30,6 +34,8 @@ const Drawer = createDrawerNavigator();
 export default function App(props) {
   // predefined
   const isLoadingComplete = useCachedResources();
+
+
 
   // check if user is authenticated or not
   //const [isLoading, setIsLoading] = React.useState(true);
@@ -90,15 +96,32 @@ export default function App(props) {
     }
   };
 
+  let listOfUsers = null; 
+  function getCredentialFromDB(userName, password){
+    return new Promise((resolve, reject) => {
+      db.transaction(tx =>{
+        tx.executeSql(
+          `select * from user where username = ? and pwd = ?`,[userName, password], (_,{rows:{_array} }) => {
+            listOfUsers = _array;
+            // what you resolve here is what will be the result of
+            // await getCredentialFromDB();     
+            resolve(listOfUsers);
+          });
+      });  
+    });
+  }
+
   const [loginState, dispatch] = React.useReducer(loginReducer, initialLoginState);
 
+
   const authContext = React.useMemo(()=>({
+    // signIn: async(userName, password) => {
     signIn: async(userName, password) => {
       //setUserToken('fgkj');
       //setIsLoading(false);
       let userToken;
       userToken = null;
-
+/**
       if (userName == 'admin' && password == 'pass'){
         try{
           userToken = 'dfsdsd';
@@ -107,8 +130,20 @@ export default function App(props) {
           console.log(e);
         }
       }
+ */
+      
+      listOfUsers = await getCredentialFromDB(userName, password);
+      // check if the user account is existed in SQLite database
+      if (listOfUsers === null || listOfUsers.length === 0){
+        alert("The login credential is incorrect. Please try it again!");
+      }else{
+        alert("Login Successful!");
+        userToken = 'asdfasdf';
+      }
+      listOfUsers = null;
       dispatch({type: 'LOGIN', id: userName, token: userToken});
     },
+
     signOut: async() => {
       //setUserToken(null);
       //setIsLoading(false);

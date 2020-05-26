@@ -1,4 +1,14 @@
 This project is based on Android device.
+Run the project:
+npm run android  --reset-cache
+
+
+In this project, I implement two ways of authentications: 
+1. using Async storage to login:
+    Username: admin
+    Password: pass
+2. Using SQLite database
+    You can sign up and use the new account to login.
 
 ![](outputScreenshot/splashScreen.png)
 ![](outputScreenshot/signInPage.png)
