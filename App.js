@@ -35,7 +35,17 @@ export default function App(props) {
   // predefined
   const isLoadingComplete = useCachedResources();
 
-
+  // target flight data here
+  const [data, setData] = React.useState(
+    {
+      from:'',
+      to:'',
+      returnTrip: true,
+      departureDate: '25-05-2020',
+      returnDate: '26-05-2020',
+      noOfPass:1
+    }
+  );
 
   // check if user is authenticated or not
   //const [isLoading, setIsLoading] = React.useState(true);
@@ -45,13 +55,7 @@ export default function App(props) {
   const initialLoginState = {
     isLoading: true,
     userName: null,
-    userToken: null,
-    from:'',
-    to:'',
-    returnTrip: true,
-    departureDate: '25-05-2020',
-    returnDate: '26-05-2020',
-    noOfPass:1
+    userToken: null
   }
 
   const loginReducer = (prevState, action) => {
@@ -83,16 +87,6 @@ export default function App(props) {
           userToken: action.token,
           isLoading: false
         };
-      case 'UPDATE':
-        return {
-          ...prevState,
-          from: action.from,
-          to: action.to,
-          returnTrip: action.returnTrip,
-          departureDate: action.departureDate,
-          returnDate: action.returnDate,
-          noOfPass: action.noOfPass
-        }
     }
   };
 
@@ -161,8 +155,19 @@ export default function App(props) {
     },
     updateFlightInfo: (from, to, returnTrip, departureDate, returnDate, numOfPass) => {
       //alert(from+" "+ returnDate + " " + numOfPass);
-      dispatch({type: 'UPDATE', from: from, to: to, returnTrip: returnTrip, departureDate: departureDate, returnDate: returnDate, noOfPass:numOfPass});
-  }
+      setData({
+        ...data,
+        from: from,
+        to: to,
+        returnTrip: returnTrip,
+        departureDate: departureDate,
+        returnDate: returnDate,
+        numOfPass: numOfPass
+      });
+    },
+    getFlightInfo: () =>{
+      return data;
+    }
   }));
 
   // Similar to componentDidMount and componentDidUpdate:
