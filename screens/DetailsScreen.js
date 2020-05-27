@@ -1,94 +1,61 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 //import axios from 'axios';
+import flightData from '../flight.json';
 
 const DetailsScreen = ({navigation}) => {
     const [data, setData] = React.useState({
-            flights: [],
+            flights: flightData,
             fromFlight: null,
             toFlight:null,
             noOfPassenger: 0,
             hasReturn:false
     });
 
+    // perform some side effects
+    /**
+    React.useEffect(()=>{
+      alert(JSON.stringify(data.flights));
+    });
+     */
+    const flightResult = data.flights.map( (flight) => {
+        return (
+                    <View style={styles.targetField} key={flight.flightId}>
+                        <View style={{flexDirection:'row'}}>
+                          <Text style={styles.text_footer}>Flight No: {flight.flightId}</Text>
+                        </View>
+                        <View style={{flexDirection:'row'}}>
+                          <Text style={styles.text_footer}>{flight.origCode} > {flight.destCode}</Text>
+                        </View>
+                        <View style={{flexDirection:'row'}}>
+                          <Text style={styles.text_footer}>Depart: {flight.departure_time}</Text>
+                        </View>
+                        <View style={{flexDirection:'row'}}>
+                          <Text style={styles.text_footer}>Arrive: {flight.arrival_time}</Text>
+                        </View>                        
+                        <View style={{flexDirection:'row'}}>
+                          <Text style={[styles.text_footer, {marginTop: 3}]}>Flight provider: </Text>
+                          <View style={styles.action}>
+                            <Text>Air NZ</Text>
+                          </View>
+                        </View>            
+                        <Button
+                          title="Book Flight"
+                          onPress={() => alert('Button Clicked!')}
+                        />
+                    </View>
+          )
+    });
 
     return (
       <View style={styles.container}>
+        <ScrollView>
         <View style={styles.footer}>
-         <View style={styles.targetField}>
-            <View style={{flexDirection:'row'}}>
-              <Text style={styles.text_footer}>From:</Text>
-              <View style={styles.action}>
-                <Text> Auckland</Text>
-              </View>
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <Text style={styles.text_footer}>To:</Text>
-              <View style={styles.action}>
-                <Text> Sydney</Text>
-              </View>
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <Text style={[styles.text_footer, {marginTop: 3}]}>Departure Date:</Text>            
-              <View style={styles.action}>
-                <Text>25-05-2020</Text>
-              </View> 
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <Text style={[styles.text_footer, {marginTop: 3}]}>Return Date:</Text>            
-              <View style={styles.action}>
-                <Text>26-05-2020</Text>
-              </View>
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <Text style={[styles.text_footer, {marginTop: 3}]}>Flight provider: </Text>
-              <View style={styles.action}>
-                <Text>Air NZ</Text>
-              </View>
-            </View>            
-            <Button
-              title="Book Flight"
-              onPress={() => alert('Button Clicked!')}
-            />
-         </View> 
-
-         <View style={styles.targetField}>
-            <View style={{flexDirection:'row'}}>
-              <Text style={styles.text_footer}>From:</Text>
-              <View style={styles.action}>
-                <Text> Auckland</Text>
-              </View>
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <Text style={styles.text_footer}>To:</Text>
-              <View style={styles.action}>
-                <Text> Sydney</Text>
-              </View>
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <Text style={[styles.text_footer, {marginTop: 3}]}>Departure Date:</Text>            
-              <View style={styles.action}>
-                <Text>25-05-2020</Text>
-              </View> 
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <Text style={[styles.text_footer, {marginTop: 3}]}>Return Date:</Text>            
-              <View style={styles.action}>
-                <Text>26-05-2020</Text>
-              </View>              
-            </View> 
-            <View style={{flexDirection:'row'}}>
-              <Text style={[styles.text_footer, {marginTop: 3}]}>Flight provider: </Text>
-              <View style={styles.action}>
-                <Text>JetStar</Text>
-              </View>
-            </View>
-            <Button
-              title="Book Flight"
-              onPress={() => alert('Button Clicked!')}
-            />            
-         </View>             
-        </View>                  
+            {
+              flightResult
+            }
+        </View>  
+        </ScrollView>                
       </View>
       
     );
@@ -116,7 +83,7 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 30,
         paddingHorizontal: 100,
-        paddingVertical: 30
+        paddingVertical: 30,
     },
     text_header: {
         color: '#fff',
@@ -125,7 +92,7 @@ const styles = StyleSheet.create({
     },
     text_footer: {
         color: '#05375a',
-        fontSize: 18
+        fontSize: 16
     },
     action: {
         flexDirection: 'row',

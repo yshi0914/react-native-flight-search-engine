@@ -71,8 +71,13 @@ const HomeScreen = ({navigation}) => {
     };
 
     const searchHandle = (from, to, returnTrip, departureDate, returnDate, numOfPass) => {
-        updateFlightInfo(from, to, returnTrip, departureDate, returnDate, numOfPass);
-        navigation.navigate("Notifications");
+        if (data.from == '' || data.to == '' || data.noOfPass == ''){
+            alert("Please enter all the search information before clicking search button!")
+        }else{
+            updateFlightInfo(from, to, returnTrip, departureDate, returnDate, numOfPass);
+            navigation.navigate("Notifications");            
+        }
+
     }    
     return (
       <View style={styles.container}>
